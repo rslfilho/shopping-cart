@@ -27,16 +27,31 @@ const addLocalStorage = (item) => {
 };
 
 const rmvLocalStorage = (cartItem) => {
-  itemStorage = itemStorage.filter((item, index) => index !== Number(cartItem.id));
+  const itemName = cartItem.querySelector('.cart-item-name').innerText;
+  itemStorage = itemStorage.filter((item) => item.title !== itemName);
   const itemStorageString = JSON.stringify(itemStorage);
   localStorage.setItem(LOCAL_STORAGE_KEY, itemStorageString);
-  cartItemsIdUpdate();
   updateTotalPrice();
 };
+
+// const rmvLocalStorage = (cartItem) => {
+//   itemStorage = itemStorage.filter((item, index) => index !== Number(cartItem.id));
+//   const itemStorageString = JSON.stringify(itemStorage);
+//   localStorage.setItem(LOCAL_STORAGE_KEY, itemStorageString);
+//   cartItemsIdUpdate();
+//   updateTotalPrice();
+// };
 
 const createProductImageElement = (imageSource) => {
   const img = document.createElement('img');``
   img.className = 'item__image';
+  img.src = imageSource;
+  return img;
+}
+
+const createCartImageElement = (imageSource) => {
+  const img = document.createElement('img');``
+  img.className = 'cart-item-img';
   img.src = imageSource;
   return img;
 }
@@ -63,20 +78,67 @@ const createProductItemElement = ({ id: sku, title: name, thumbnail_id: image, p
 
 const getSkuFromProductItem = (item) => item.querySelector('span.item__sku').innerText;
 
-const cartItemClickListener = (event) => {
-  event.target.remove();
-  rmvLocalStorage(event.target);
+// const cartItemClickListener = (event) => {
+//   event.target.remove();
+//   rmvLocalStorage(event.target);
+// }
+
+const createCartItemQuantity = () => {
+  const p = document.createElement('p');
+
+  p.className = 'cart-item-quantity';
+  p.appendChild(createCustomElement('span', 'cart-item-number', 1));
+  p.appendChild(createCustomElement('span', '', ' und'));
+
+  return p;
 }
 
-const createCartItemElement = ({ id: sku, title: name, price: salePrice }) => {
-  const li = document.createElement('li');
-  const cartLength = document.querySelector(CART_ITEMS).childNodes.length;
-  li.id = cartLength;
-  li.className = 'cart__item';
-  li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
-  li.addEventListener('click', cartItemClickListener);
-  return li;
+const cartItemTrashListener = (event) => {
+  const cartItemElement = event.target.parentElement.parentElement.parentElement;
+
+  cartItemElement.remove();
+  rmvLocalStorage(cartItemElement);
 }
+
+const createCartItemPriceAndTrash = (salePrice) => {
+  const div = document.createElement('div');
+
+  div.className = 'cart-item-price-trash';
+  div.appendChild(createCustomElement('p', 'cart-item-price', `R$ ${salePrice.toFixed(2)}`));
+  div.appendChild(createCustomElement('i', 'bi bi-trash cart-item-trash', ''));
+
+  div.querySelector('.cart-item-trash').addEventListener('click', cartItemTrashListener);
+
+  return div;
+}
+
+const createCartItemElement = ({ id: sku, title: name, price: salePrice, thumbnail_id: image }) => {
+  const div = document.createElement('div');
+  const divInfo = document.createElement('div');
+
+  div.className = 'cart-item-div';
+  divInfo.className = 'cart-item-info';
+
+  div.appendChild(createCartImageElement(`https://http2.mlstatic.com/D_NQ_NP_${image}-W.webp`));
+  divInfo.appendChild(createCustomElement('p', 'cart-item-name', name));
+  divInfo.appendChild(createCartItemQuantity());
+  divInfo.appendChild(createCartItemPriceAndTrash(salePrice));
+
+  
+  div.appendChild(divInfo);
+
+  return div;
+}
+
+// const createCartItemElement = ({ id: sku, title: name, price: salePrice }) => {
+//   const li = document.createElement('li');
+//   const cartLength = document.querySelector(CART_ITEMS).childNodes.length;
+//   li.id = cartLength;
+//   li.className = 'cart__item';
+//   li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
+//   li.addEventListener('click', cartItemClickListener);
+//   return li;
+// }
 
 const getLocalStorage = () => {
   if (localStorage.getItem(LOCAL_STORAGE_KEY) !== null) {
