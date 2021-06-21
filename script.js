@@ -6,7 +6,7 @@ const LOCAL_STORAGE_KEY = 'shopCart';
 let itemStorage = [];
 
 const cartItemsIdUpdate = () => {
-  const cartItems = document.querySelectorAll('.cart__item');
+  const cartItems = document.querySelectorAll('.cart-item-div');
   cartItems.forEach((item, index) => {
     const itemElement = item;
     itemElement.id = index;
@@ -26,21 +26,22 @@ const addLocalStorage = (item) => {
   updateTotalPrice();
 };
 
-const rmvLocalStorage = (cartItem) => {
-  const itemName = cartItem.querySelector('.cart-item-name').innerText;
-  itemStorage = itemStorage.filter((item) => item.title !== itemName);
-  const itemStorageString = JSON.stringify(itemStorage);
-  localStorage.setItem(LOCAL_STORAGE_KEY, itemStorageString);
-  updateTotalPrice();
-};
-
 // const rmvLocalStorage = (cartItem) => {
-//   itemStorage = itemStorage.filter((item, index) => index !== Number(cartItem.id));
+//   const itemName = cartItem.querySelector('.cart-item-name').innerText;
+//   itemStorage = itemStorage.filter((item) => item.title !== itemName);
 //   const itemStorageString = JSON.stringify(itemStorage);
 //   localStorage.setItem(LOCAL_STORAGE_KEY, itemStorageString);
 //   cartItemsIdUpdate();
 //   updateTotalPrice();
 // };
+
+const rmvLocalStorage = (cartItem) => {
+  itemStorage = itemStorage.filter((item, index) => index !== Number(cartItem.id));
+  const itemStorageString = JSON.stringify(itemStorage);
+  localStorage.setItem(LOCAL_STORAGE_KEY, itemStorageString);
+  cartItemsIdUpdate();
+  updateTotalPrice();
+};
 
 const createProductImageElement = (imageSource) => {
   const img = document.createElement('img');``
@@ -115,7 +116,9 @@ const createCartItemPriceAndTrash = (salePrice) => {
 const createCartItemElement = ({ id: sku, title: name, price: salePrice, thumbnail_id: image }) => {
   const div = document.createElement('div');
   const divInfo = document.createElement('div');
+  const cartItemCount = document.querySelector(CART_ITEMS).childElementCount;
 
+  div.id = cartItemCount;
   div.className = 'cart-item-div';
   divInfo.className = 'cart-item-info';
 
@@ -230,10 +233,9 @@ const addButtonsEvent = () => {
 const eraseCart = () => {
   const eraseButton = document.querySelector('.empty-cart');
   eraseButton.addEventListener('click', () => {
-    const shopCart = document.querySelector(CART_ITEMS);
-    const cartItem = document.querySelectorAll('.cart__item');
+    const cartItem = document.querySelectorAll('.cart-item-div');
     itemStorage = [];
-    cartItem.forEach((item) => shopCart.removeChild(item));
+    cartItem.forEach((item) => item.remove())
     localStorage.clear();
     updateTotalPrice();
   });
