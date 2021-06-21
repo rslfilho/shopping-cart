@@ -30,6 +30,8 @@ _Parte dos códigos já vinham na base do projeto_
 
 # Imagem
 
+![printscreen](./shopping-cart.png)
+
 ### Lista de requisitos
 
 ---
